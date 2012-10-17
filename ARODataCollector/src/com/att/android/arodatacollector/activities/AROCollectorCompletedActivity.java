@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import com.att.android.arodatacollector.R;
 import com.att.android.arodatacollector.main.ARODataCollector;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -74,6 +75,7 @@ public class AROCollectorCompletedActivity extends Activity {
 		setContentView(R.layout.arocollector_tracecompleted_screen);
 		initTraceSummaryControls();
 		initTraceSummaryControlListeners();
+		AndroidMobileAgent.getAgentInstance().uploadAnalytics();
 	}
 
 	/**

@@ -30,6 +30,8 @@ import com.att.android.arodatacollector.main.ARODataCollector;
 import com.att.android.arodatacollector.main.AROCollectorCustomDialog.Dialog_Type;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
 import com.att.android.arodatacollector.R;
+import com.instaops.android.AndroidMobileAgent;
+import com.instaops.android.ApplicationConfigurationService;
 
 import android.app.Activity;
 import android.content.Context;
@@ -139,7 +141,25 @@ public class AROCollectorMainActivity extends Activity {
 		mApp = (ARODataCollector) getApplication();
 		startDataCollector = (Button) findViewById(R.id.startcollector);
 		taskKiller = (Button) findViewById(R.id.taskkiller);
+		
+		ApplicationConfigurationService applicationConfigurationService = AndroidMobileAgent.getAgentInstance().getApplicationConfigurationService();         
+        
+		String enableTaskKillerFlag = applicationConfigurationService.getAppConfigCustomParameter("FEATURES", "enableTaskKiller");
+		
+		if (enableTaskKillerFlag != null && enableTaskKillerFlag.equals("false"))
+		{
+			taskKiller.setVisibility(View.GONE);
+		}
+		
 		collectScreenVideo = (CheckBox) findViewById(R.id.ckbx_screenshot);
+		
+		String enableRecordVideoFlag = applicationConfigurationService.getAppConfigCustomParameter("FEATURES", "enableRecordVideo");
+	
+		if (enableRecordVideoFlag != null && enableRecordVideoFlag.equals("false"))
+		{
+			collectScreenVideo.setVisibility(View.GONE);
+		}
+		
 		startDataCollector.setEnabled(true);
 		mAroUtils = new AROCollectorUtils();
 		mAROConnectiviyMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
