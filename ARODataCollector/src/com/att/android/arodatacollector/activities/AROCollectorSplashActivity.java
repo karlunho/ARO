@@ -240,7 +240,7 @@ public class AROCollectorSplashActivity extends Activity {
 			
 			AndroidMobileAgent.getAgentInstance().uploadAnalytics();
 		} catch (InitializationException e) {
-			AndroidMobileAgent.getAgentInstance().getAndroidLogger().w(TAG,"Android Client failed to init" + e.getMessage());
+			Log.w(TAG,"Android Client failed to init" + e.getMessage());
 		}
 		
 		AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Application has initialized");
