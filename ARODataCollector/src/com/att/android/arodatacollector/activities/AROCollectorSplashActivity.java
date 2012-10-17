@@ -15,6 +15,8 @@
  */
 package com.att.android.arodatacollector.activities;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.att.android.arodatacollector.R;
 import com.att.android.arodatacollector.main.AROCollectorService;
 import com.att.android.arodatacollector.main.ARODataCollector;
@@ -30,6 +32,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.instaops.android.AndroidMobileAgent;
+import com.instaops.android.InitializationException;
 
 /**
  * 
@@ -99,11 +104,11 @@ public class AROCollectorSplashActivity extends Activity {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			synchronized (mMutex) {
 				if (!mAbortSplash) {
-					Log.i(TAG, "splash screen touched");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "splash screen touched");
 					if (mInitialized) {
-						Log.i(TAG, "Initialize complete - will abort");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Initialize complete - will abort");
 					} else {
-						Log.i(TAG, "Initialize still running - will abort when complete");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Initialize still running - will abort when complete");
 					}
 					mAbortSplash = true;
 					mMutex.notify();
@@ -223,6 +228,22 @@ public class AROCollectorSplashActivity extends Activity {
 		});
 		timerThread.start();
 		initializeThread.start();
+		
+		
+		//Initializing the mobile agent
+		
+		try {
+			//AndroidMobileAgent.initialize("7", this,"AKIAJ4L2SD2KEGUFMUWA","S3X8pm0ioODmQvo1RYVRiMpmxJWfYC5UotnfWCHy","prod");
+			
+			
+			AndroidMobileAgent.initialize("7", this, new DefaultHttpClient(), "AKIAJ4L2SD2KEGUFMUWA", "S3X8pm0ioODmQvo1RYVRiMpmxJWfYC5UotnfWCHy", 0, "prod", false);
+			
+			AndroidMobileAgent.getAgentInstance().uploadAnalytics();
+		} catch (InitializationException e) {
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().w(TAG,"Android Client failed to init" + e.getMessage());
+		}
+		
+		AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Application has initialized");
 	}
 
 	/**

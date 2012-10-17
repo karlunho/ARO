@@ -19,9 +19,10 @@ package com.att.android.arodatacollector.main;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.util.Log;
+//import android.util.Log;
 
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
+import com.instaops.android.AndroidMobileAgent;
 
 /**
  * Represents task killer process information for the ARO Data Collector. This
@@ -89,13 +90,13 @@ public class AROCollectorTaskManagerProcessInfo {
 			isTcpDumpRunning = (mAROUtlis.getProcessID("tcpdump") > 0 ? true : false);
 
 			if (DEBUG) {
-				Log.d(TAG, "isTcpDumpRunning: " + isTcpDumpRunning);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "isTcpDumpRunning: " + isTcpDumpRunning);
 			}
 			return (isTcpDumpRunning);
 		} catch (IOException e) {
-			Log.e(TAG, e.getClass().getName() + " thrown by pstcpdump()");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, e.getClass().getName() + " thrown by pstcpdump()");
 		} catch (InterruptedException e) {
-			Log.e(TAG, e.getClass().getName() + " thrown by pstcpdump()");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, e.getClass().getName() + " thrown by pstcpdump()");
 		}
 		return isTcpDumpRunning;
 	}

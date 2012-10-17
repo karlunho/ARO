@@ -38,7 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import android.os.StatFs;
 import android.provider.Settings;
-import android.util.Log;
+//import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -48,6 +48,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+
+import com.instaops.android.AndroidMobileAgent;
 
 /**
  * Contains utility methods that are used by the ARO Data Collector.
@@ -180,10 +182,10 @@ public class AROCollectorUtils {
 
 		} catch (NoSuchFieldException exp) {
 			fieldValue = "";
-			Log.e(TAG, "Exception in getSpecifiedFieldValues NoSuchFieldException" + exp);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in getSpecifiedFieldValues NoSuchFieldException" + exp);
 		} catch (IllegalAccessException ile) {
 			fieldValue = "";
-			Log.e(TAG, "Exception in getSpecifiedFieldValues IllegalAccessException" + ile);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in getSpecifiedFieldValues IllegalAccessException" + ile);
 		}
 
 		return fieldValue;
@@ -230,12 +232,12 @@ public class AROCollectorUtils {
 							sbread.append(ls_1).append("\n");
 						}
 					} catch (IOException e) {
-						Log.e(TAG, "IOException in runCommand" + e);
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException in runCommand" + e);
 					} finally {
 						try {
 							bufferedReader.close();
 						} catch (IOException e) {
-							Log.e(TAG, "Exception in runCommand bufferedReader.close()" + e);
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in runCommand bufferedReader.close()" + e);
 						}
 					}
 				}
@@ -252,12 +254,12 @@ public class AROCollectorUtils {
 							sberr.append(ls_1).append("\n");
 						}
 					} catch (IOException e) {
-						Log.e(TAG, "Exception in runCommand" + e);
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in runCommand" + e);
 					} finally {
 						try {
 							bufferedReader.close();
 						} catch (IOException e) {
-							Log.e(TAG, "Exception in runCommand bufferedReader.close()" + e);
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in runCommand bufferedReader.close()" + e);
 						}
 					}
 				}
@@ -272,10 +274,10 @@ public class AROCollectorUtils {
 			stderr = sberr.toString();
 			sRet = stdout + stderr;
 		} catch (java.io.IOException ee) {
-			Log.e(TAG, "Exception in runCommand" + ee);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in runCommand" + ee);
 			return null;
 		} catch (InterruptedException ie) {
-			Log.e(TAG, "Exception in runCommand" + ie);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in runCommand" + ie);
 			return null;
 		}
 		return sRet;
@@ -283,7 +285,7 @@ public class AROCollectorUtils {
 
 	private String executePS(String processName) throws IOException, InterruptedException {
 		if (DEBUG) {
-			Log.d(TAG, "entered ps...");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "entered ps...");
 		}
 
 		final Process process = Runtime.getRuntime().exec("ps " + processName);
@@ -308,7 +310,7 @@ public class AROCollectorUtils {
 			inputStream.close();
 			reader.close();
 			if (DEBUG) {
-				Log.d(TAG, "exiting ps...");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "exiting ps...");
 			}
 		}
 	}
@@ -331,12 +333,12 @@ public class AROCollectorUtils {
 		String[] rows = line.split("\\n");
 		if (DEBUG) {
 			for (int rowNum = 0; rowNum < rows.length; rowNum++) {
-				Log.d(TAG, "values row " + rowNum + ": " + ">>>" + rows[rowNum] + "<<<");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "values row " + rowNum + ": " + ">>>" + rows[rowNum] + "<<<");
 			}
 		}
 		if (rows[0].startsWith("USER")) {
 			if (DEBUG) {
-				Log.d(TAG, "PID should be in 2nd column in single row retrieved");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "PID should be in 2nd column in single row retrieved");
 			}
 			for (int rowNum = 1; rowNum < rows.length; rowNum++) {
 				String row = rows[rowNum];
@@ -344,7 +346,7 @@ public class AROCollectorUtils {
 
 				if (DEBUG) {
 					for (int itemNum = 0; itemNum < values_item.length; itemNum++) {
-						Log.d(TAG, "item " + itemNum + ": " + ">>>" + values_item[itemNum] + "<<<");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "item " + itemNum + ": " + ">>>" + values_item[itemNum] + "<<<");
 					}
 				}
 				// expects second column is PID
@@ -357,7 +359,7 @@ public class AROCollectorUtils {
 					try {
 						pid = Integer.valueOf(temp);
 					} catch (NumberFormatException nfe) {
-						Log.e(TAG, nfe.getClass().getName() + " thrown trying to parse PID");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, nfe.getClass().getName() + " thrown trying to parse PID");
 						// will allow to return default PID of 0
 					}
 					// also check process code status
@@ -367,18 +369,18 @@ public class AROCollectorUtils {
 						continue;// look in next row
 					}
 					if (DEBUG) {
-						Log.d(TAG, "header column: " + itemNum + ">>PID returned: " + pid);
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "header column: " + itemNum + ">>PID returned: " + pid);
 					}
 				}
 				// }
 				return pid;
 			}
 			if (DEBUG) {
-				Log.d(TAG, "exiting if USER block with PID (without finding one): " + pid);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "exiting if USER block with PID (without finding one): " + pid);
 			}
 		} else {
 			if (DEBUG) {
-				Log.d(TAG, "entered else-issuing ps command by itself");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "entered else-issuing ps command by itself");
 			}
 
 			line = executePS("");
@@ -390,7 +392,7 @@ public class AROCollectorUtils {
 				for (int itemNumPS = 0; itemNumPS < rows.length; itemNumPS++) {
 					String row = rows[itemNumPS];
 					if (DEBUG) {
-						Log.d(TAG, "row " + itemNumPS + ": " + ">>>" + row + "<<<");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "row " + itemNumPS + ": " + ">>>" + row + "<<<");
 					}
 
 					String[] value_item = row.split("\\s+"); // assumption on ps
@@ -405,16 +407,16 @@ public class AROCollectorUtils {
 					// with "PID"
 					if (itemNumPS == 0) {
 						if (DEBUG) {
-							Log.d(TAG, "header row...");
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "header row...");
 						}
 						for (int headerItemNum = 0; headerItemNum < value_item.length; headerItemNum++) {
-							Log.d(TAG, "header item " + headerItemNum + "="
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "header item " + headerItemNum + "="
 									+ value_item[headerItemNum]);
 
 							if (value_item[headerItemNum].equalsIgnoreCase("PID")) {
 								column_num = headerItemNum;
 								if (DEBUG) {
-									Log.d(TAG, "[zero-based] column number containing PID: "
+									AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "[zero-based] column number containing PID: "
 											+ column_num);
 								}
 								break;
@@ -422,16 +424,16 @@ public class AROCollectorUtils {
 						}
 					} else {
 						if (DEBUG) {
-							Log.d(TAG, "rows of processes...");
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "rows of processes...");
 						}
 						for (int processRowNum = 0; processRowNum < value_item.length; processRowNum++) {
-							Log.d(TAG, "process row entry " + processRowNum + "= "
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "process row entry " + processRowNum + "= "
 									+ value_item[processRowNum]);
 							if (value_item[processRowNum].contains(processName)) {
 								pid = Integer.valueOf(value_item[column_num]);
 								if (DEBUG) {
 									// returns 1st match
-									Log.d(TAG, "for process " + processName + " found PID: " + pid);
+									AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "for process " + processName + " found PID: " + pid);
 								}
 								return pid;
 							}
@@ -441,12 +443,12 @@ public class AROCollectorUtils {
 			} else {
 				if (DEBUG) {
 					// pid is still equal to 0; nothing else to do but log
-					Log.d(TAG, "values.length: " + rows.length + "-PID: " + pid);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "values.length: " + rows.length + "-PID: " + pid);
 				}
 			}
 		}
 		if (DEBUG) {
-			Log.d(TAG, "exiting getProcessID()-returning PID: " + pid);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "exiting getProcessID()-returning PID: " + pid);
 		}
 		return pid;
 	}
@@ -516,7 +518,7 @@ public class AROCollectorUtils {
 		try {
 			ret = pm.getPackageInfo(name, PackageManager.GET_ACTIVITIES);
 		} catch (NameNotFoundException e) {
-			Log.e(TAG, "Exception in getPackageInfo" + e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Exception in getPackageInfo" + e);
 		}
 		return ret;
 	}

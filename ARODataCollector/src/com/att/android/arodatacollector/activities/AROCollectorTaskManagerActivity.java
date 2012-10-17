@@ -26,6 +26,7 @@ import com.att.android.arodatacollector.main.AROCollectorTaskManagerProcessInfo;
 import com.att.android.arodatacollector.main.ARODataCollector;
 import com.att.android.arodatacollector.main.AROCollectorTaskManagerListAdapters.ProcessListAdapter;
 import com.att.android.arodatacollector.R;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -36,7 +37,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -315,7 +316,7 @@ public class AROCollectorTaskManagerActivity extends Activity {
 							&& !dp.getPackageName().equalsIgnoreCase("com.google.android.location")) {
 						detailProcessesList.add(dp);
 						if (DEBUG) {
-							Log.i(TAG, "Task Manager Tasks added:" + dp.getPackageName());
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Task Manager Tasks added:" + dp.getPackageName());
 						}
 					}
 				}

@@ -30,6 +30,8 @@ import com.att.android.arodatacollector.main.ARODataCollector;
 import com.att.android.arodatacollector.main.AROCollectorCustomDialog.Dialog_Type;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
 import com.att.android.arodatacollector.R;
+import com.instaops.android.AndroidMobileAgent;
+import com.instaops.android.ApplicationConfigurationService;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,7 +42,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -139,7 +141,25 @@ public class AROCollectorMainActivity extends Activity {
 		mApp = (ARODataCollector) getApplication();
 		startDataCollector = (Button) findViewById(R.id.startcollector);
 		taskKiller = (Button) findViewById(R.id.taskkiller);
+		
+		ApplicationConfigurationService applicationConfigurationService = AndroidMobileAgent.getAgentInstance().getApplicationConfigurationService();         
+        
+		String enableTaskKillerFlag = applicationConfigurationService.getAppConfigCustomParameter("FEATURES", "enableTaskKiller");
+		
+		if (enableTaskKillerFlag != null && enableTaskKillerFlag.equals("false"))
+		{
+			taskKiller.setVisibility(View.GONE);
+		}
+		
 		collectScreenVideo = (CheckBox) findViewById(R.id.ckbx_screenshot);
+		
+		String enableRecordVideoFlag = applicationConfigurationService.getAppConfigCustomParameter("FEATURES", "enableRecordVideo");
+	
+		if (enableRecordVideoFlag != null && enableRecordVideoFlag.equals("false"))
+		{
+			collectScreenVideo.setVisibility(View.GONE);
+		}
+		
 		startDataCollector.setEnabled(true);
 		mAroUtils = new AROCollectorUtils();
 		mAROConnectiviyMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -184,7 +204,7 @@ public class AROCollectorMainActivity extends Activity {
 					mAROrootShell = Runtime.getRuntime().exec("su");
 					mAROrootShell.getOutputStream();
 				} catch (IOException e) {
-					Log.e(TAG, "exception in getting root permission", e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in getting root permission", e);
 				}
 				mAROrootShell = null;
 				showARODataCollectorErrorDialog(Dialog_Type.TRACE_FOLDERNAME);
@@ -267,7 +287,7 @@ public class AROCollectorMainActivity extends Activity {
 					aroDCStartWatchTimer.cancel();
 					aroDCStartTimer.cancel();
 					if (DEBUG) {
-						Log.i(TAG, "Failed to start ARODataCollector in 15 sec");
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Failed to start ARODataCollector in 15 sec");
 					}
 				}
 			}
@@ -287,7 +307,7 @@ public class AROCollectorMainActivity extends Activity {
 		final File traceRootFolder = new File(ARODataCollector.ARO_TRACE_ROOTDIR);
 
 		if (DEBUG)
-			Log.d(TAG, "mAroTraceDatapath=" + mAroTraceDatapath);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "mAroTraceDatapath=" + mAroTraceDatapath);
 
 		// Creates the trace root directory
 		if (!traceRootFolder.exists()) {
@@ -359,7 +379,7 @@ public class AROCollectorMainActivity extends Activity {
 	protected void onPause() {
 
 		if (DEBUG) {
-			Log.d(TAG, "onPause() called");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "onPause() called");
 		}
 		super.onPause();
 	}
@@ -427,13 +447,13 @@ public class AROCollectorMainActivity extends Activity {
 				}
 				showARODataCollectorErrorDialog(Dialog_Type.DC_FAILED_START);
 				if (DEBUG) {
-					Log.i(TAG, "Setting Data Collector stop flag");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Setting Data Collector stop flag");
 				}
 				mApp.setARODataCollectorStopFlag(true);
 				collectScreenVideo.setEnabled(true);
 				startDataCollector.setEnabled(true);
 				if (DEBUG) {
-					Log.i(TAG, "Setting Data Collector stop flag");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Setting Data Collector stop flag");
 				}
 				break;
 			}
@@ -475,7 +495,7 @@ public class AROCollectorMainActivity extends Activity {
 			break;
 		}
 		if (DEBUG) {
-			Log.i(TAG, "handleErrorDialogs errordialogid=" + errordialogid);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "handleErrorDialogs errordialogid=" + errordialogid);
 		}
 	}
 
@@ -491,7 +511,7 @@ public class AROCollectorMainActivity extends Activity {
 				boolean success) {
 			if (success) {
 				if (DEBUG) {
-					Log.i(TAG, "Device SD Card Space=" + mAroUtils.checkSDCardMemoryAvailable());
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Device SD Card Space=" + mAroUtils.checkSDCardMemoryAvailable());
 				}
 				// Checking if the available space of SD card is less than 5MB
 				// before start of the trace

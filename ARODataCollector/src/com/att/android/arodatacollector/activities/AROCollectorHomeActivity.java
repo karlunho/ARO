@@ -27,10 +27,11 @@ import com.att.android.arodatacollector.main.AROCollectorService;
 import com.att.android.arodatacollector.main.AROCollectorTraceService;
 import com.att.android.arodatacollector.main.ARODataCollector;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -103,7 +104,7 @@ public class AROCollectorHomeActivity extends Activity {
 	@Override
 	protected void onPause() {
 		if (DEBUG) {
-			Log.d(TAG, "onPause() called");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "onPause() called");
 		}
 		super.onPause();
 		// TODO : Better way to do this
@@ -144,13 +145,13 @@ public class AROCollectorHomeActivity extends Activity {
 	 */
 	private void dataCollectorStopWatchTimer() {
 		if (DEBUG) {
-			Log.i(TAG, "Inside dataCollectorStopWatchTimer....");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Inside dataCollectorStopWatchTimer....");
 		}
 		aroDCStopWatchTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				if (DEBUG) {
-					Log.i(TAG,
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG,
 							"Inside dataCollectorStopWatchTimer....mApp.getTcpDumpStartFlag"
 									+ mApp.getTcpDumpStartFlag()
 									+ "mApp.getARODataCollectorStopFlag(true);"
@@ -160,10 +161,10 @@ public class AROCollectorHomeActivity extends Activity {
 					aroDCStopWatchTimer.cancel();
 					if (AROCollectorTraceService.getServiceObj() != null) {
 						if (DEBUG) {
-							Log.i(TAG, "Inside Ping Connection....hideProgressDialog");
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Inside Ping Connection....hideProgressDialog");
 						}
 						if (DEBUG) {
-							Log.i(TAG, "Setting Data Collector stop flag");
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Setting Data Collector stop flag");
 						}
 						mApp.setARODataCollectorStopFlag(true);
 						try {
@@ -173,11 +174,11 @@ public class AROCollectorHomeActivity extends Activity {
 							// for htc hardware
 							mAroUtils.OpenHttpConnection();
 						} catch (ClientProtocolException e) {
-							Log.e(TAG, "exception in OpenHttpConnection ", e);
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in OpenHttpConnection ", e);
 						} catch (IOException e) {
 							// TODO : To display error message for failed stop
 							// of data collector
-							Log.e(TAG, "exception in OpenHttpConnection ", e);
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in OpenHttpConnection ", e);
 						}
 					}
 				}
@@ -191,7 +192,7 @@ public class AROCollectorHomeActivity extends Activity {
 	 */
 	private void stopARODataCollector() {
 		if (DEBUG) {
-			Log.i(TAG, "Inside stopARODataCollector....");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Inside stopARODataCollector....");
 		}
 		dataCollectorStopWatchTimer();
 		stopDataCollector.setEnabled(false);

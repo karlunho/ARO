@@ -40,11 +40,12 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.util.Log;
+//import android.util.Log;
 
 import com.att.android.arodatacollector.activities.AROCollectorCompletedActivity;
 import com.att.android.arodatacollector.activities.AROCollectorMainActivity;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
+import com.instaops.android.AndroidMobileAgent;
 
 /**
  * Contains methods for managing the tcpdump and video capture processes while
@@ -143,7 +144,7 @@ public class AROCollectorService extends Service {
 			// Disable screen timeout
 			setScreenTimeOut(-1);
 		} catch (SettingNotFoundException e) {
-			Log.e(TAG, "exception in getting device settings. Failed to get screen timeout", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in getting device settings. Failed to get screen timeout", e);
 		}
 		TRACE_FOLDERNAME = mApp.getDumpTraceFolderName();
 		mVideoRecording = mApp.getCollectVideoOption();
@@ -179,9 +180,9 @@ public class AROCollectorService extends Service {
 					startTcpDump();
 					writAppVersions();
 				} catch (IOException e) {
-					Log.e(TAG, "IOException in startTcpDump ", e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException in startTcpDump ", e);
 				} catch (InterruptedException e) {
-					Log.e(TAG, "InterruptedException in startTcpDump ", e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "InterruptedException in startTcpDump ", e);
 				}
 			}
 		}).start();
@@ -202,7 +203,7 @@ public class AROCollectorService extends Service {
 						mApp.initVideoTraceTime();
 						startScreenVideoCapture();
 					} catch (FileNotFoundException e) {
-						Log.e(TAG, "exception in initVideoTraceTime. Failed to start Video", e);
+						AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in initVideoTraceTime. Failed to start Video", e);
 					}
 				}
 			}).start();
@@ -237,8 +238,8 @@ public class AROCollectorService extends Service {
 			os.flush();
 			int shExitValue = sh.waitFor();
 			if (DEBUG) {
-				Log.d(TAG, "tcpdump process exit value: " + shExitValue);
-				Log.i(TAG, "Coming out of startTcpDump");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "tcpdump process exit value: " + shExitValue);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Coming out of startTcpDump");
 			}
 			// Stopping the Video capture right after tcpdump coming out of
 			// shell
@@ -256,7 +257,7 @@ public class AROCollectorService extends Service {
 				mApp.setTcpDumpStartFlag(false);
 				os.close();
 			} catch (IOException e) {
-				Log.e(TAG, "exception in startTcpDump DataOutputStream close", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in startTcpDump DataOutputStream close", e);
 			}
 			sh.destroy();
 		}
@@ -271,7 +272,7 @@ public class AROCollectorService extends Service {
 	public void requestDataCollectorStop() {
 		try {
 			if (DEBUG) {
-				Log.i(TAG, "stopTcpDump In....");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "stopTcpDump In....");
 			}
 			final Socket tcpdumpsocket = new Socket(InetAddress.getByName("localhost"), 50999);
 			final OutputStream out = tcpdumpsocket.getOutputStream();
@@ -280,12 +281,12 @@ public class AROCollectorService extends Service {
 			out.close();
 			tcpdumpsocket.close();
 			if (DEBUG) {
-				Log.i(TAG, "stopTcpDump Out....");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "stopTcpDump Out....");
 			}
 		} catch (UnknownHostException e) {
-			Log.e(TAG, "exception in stopTcpDump", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopTcpDump", e);
 		} catch (IOException e) {
-			Log.e(TAG, "exception in stopTcpDump", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopTcpDump", e);
 		}
 	}
 
@@ -306,10 +307,10 @@ public class AROCollectorService extends Service {
 	 */
 	private void handleDataCollectorTraceStop() {
 		if (DEBUG) {
-			Log.i(TAG, "handleDataCollectorTraceStop");
-			Log.i(TAG, "mApp.getDataCollectorBearerChange()=" + mApp.getDataCollectorBearerChange());
-			Log.i(TAG, "mApp.getDataCollectorInProgressFlag()=" + mApp.getDataCollectorInProgressFlag());
-			Log.i(TAG, "mApp.getARODataCollectorStopFlag()=" + mApp.getARODataCollectorStopFlag());
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "handleDataCollectorTraceStop");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "mApp.getDataCollectorBearerChange()=" + mApp.getDataCollectorBearerChange());
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "mApp.getDataCollectorInProgressFlag()=" + mApp.getDataCollectorInProgressFlag());
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "mApp.getARODataCollectorStopFlag()=" + mApp.getARODataCollectorStopFlag());
 		}
 
 		if (mApp.getDataCollectorBearerChange()) {
@@ -321,13 +322,13 @@ public class AROCollectorService extends Service {
 
 			if (!mApp.isWifiLost()) {
 				if (DEBUG) {
-					Log.d(TAG, "network bearer change");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "network bearer change");
 				}
 				tcpdumpStoppedBearerChangeIntent.putExtra(ARODataCollector.ERRODIALOGID,
 						ARODataCollector.BEARERCHANGEERROR);
 			} else {
 				if (DEBUG) {
-					Log.d(TAG, "writing for wifi lost");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "writing for wifi lost");
 				}
 
 				tcpdumpStoppedBearerChangeIntent.putExtra(ARODataCollector.ERRODIALOGID,
@@ -342,7 +343,7 @@ public class AROCollectorService extends Service {
 			stopService(new Intent(getApplicationContext(), AROCollectorService.class));
 		} else if (!mApp.getDataCollectorInProgressFlag()) {
 			if (DEBUG) {
-				Log.i(TAG, "Cancle Notification Call");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Cancle Notification Call");
 			}
 			mApp.cancleAROAlertNotification();
 			if (!mApp.getARODataCollectorStopFlag()) {
@@ -358,12 +359,12 @@ public class AROCollectorService extends Service {
 						Thread.sleep(14000);
 					}
 				} catch (InterruptedException e) {
-					Log.e(TAG, "InterruptedException while sleep SD card mount" + e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "InterruptedException while sleep SD card mount" + e);
 				}
 				mApp.setTcpDumpStartFlag(false);
 				tcpdumpStoppedIntent = new Intent(getBaseContext(), AROCollectorMainActivity.class);
 				if (DEBUG) {
-					Log.i(TAG, "SD card space left =" + mAroUtils.checkSDCardMemoryAvailable());
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "SD card space left =" + mAroUtils.checkSDCardMemoryAvailable());
 				}
 				if (mAroUtils.checkSDCardMemoryAvailable() == 0.0) {
 					tcpdumpStoppedIntent.putExtra(ARODataCollector.ERRODIALOGID,
@@ -379,7 +380,7 @@ public class AROCollectorService extends Service {
 				getApplication().startActivity(tcpdumpStoppedIntent);
 			} else if (mApp.getARODataCollectorStopFlag()) {
 				if (DEBUG) {
-					Log.i(TAG, "Trace Summary Screen to Start");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Trace Summary Screen to Start");
 				}
 				traceCompletedIntent = new Intent(getBaseContext(),
 						AROCollectorCompletedActivity.class);
@@ -424,7 +425,7 @@ public class AROCollectorService extends Service {
 		DataOutputStream os = null;
 		try {
 			if (DEBUG) {
-				Log.e(TAG, "Starting Video Capture");
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Starting Video Capture");
 			}
 			sh = Runtime.getRuntime().exec("su");
 			os = new DataOutputStream(sh.getOutputStream());
@@ -440,28 +441,28 @@ public class AROCollectorService extends Service {
 			os.flush();
 			sh.waitFor();
 		} catch (IOException e) {
-			Log.e(TAG, "exception in startScreenVideoCapture", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in startScreenVideoCapture", e);
 		} catch (InterruptedException e) {
-			Log.e(TAG, "exception in startScreenVideoCapture", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in startScreenVideoCapture", e);
 		} finally {
 			try {
 				if (DEBUG) {
-					Log.e(TAG, "Stopped Video Capture");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Stopped Video Capture");
 				}
 				os.close();
 				// Reading start time of Video from ffmpegout file
 				mApp.readffmpegStartTimefromFile();
 			} catch (IOException e) {
-				Log.e(TAG, "IOException in reading video start time", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException in reading video start time", e);
 			} catch (NumberFormatException e) {
-				Log.e(TAG, "NumberFormatException in reading video start time", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "NumberFormatException in reading video start time", e);
 			}
 			try {
 				// Recording start time of video
 				mApp.writeVideoTraceTime(Double.toString(mApp.getAROVideoCaptureStartTime()));
 				mApp.closeVideoTraceTimeFile();
 			} catch (IOException e) {
-				Log.e(TAG, "IOException in writing video start time", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException in writing video start time", e);
 			}
 			if (mApp.getTcpDumpStartFlag() && !mApp.getARODataCollectorStopFlag()) {
 				mApp.setVideoCaptureFailed(true);
@@ -481,12 +482,12 @@ public class AROCollectorService extends Service {
 		try {
 			pid = mAroUtils.getProcessID("ffmpeg");
 		} catch (IOException e1) {
-			Log.e(TAG, "IOException in stopScreenVideoCapture", e1);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException in stopScreenVideoCapture", e1);
 		} catch (InterruptedException e1) {
-			Log.e(TAG, "exception in stopScreenVideoCapture", e1);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopScreenVideoCapture", e1);
 		}
 		if (DEBUG) {
-			Log.i(TAG, "stopScreenVideoCapture=" + pid);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "stopScreenVideoCapture=" + pid);
 		}
 		if (pid != 0) {
 			try {
@@ -497,18 +498,18 @@ public class AROCollectorService extends Service {
 				os.flush();
 				sh.waitFor();
 			} catch (IOException e) {
-				Log.e(TAG, "exception in stopScreenVideoCapture", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopScreenVideoCapture", e);
 			} catch (InterruptedException e) {
-				Log.e(TAG, "exception in stopScreenVideoCapture", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopScreenVideoCapture", e);
 			} finally {
 				try {
 					mVideoRecording = false;
 					os.close();
 				} catch (IOException e) {
-					Log.e(TAG, "exception in stopScreenVideoCapture DataOutputStream close", e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in stopScreenVideoCapture DataOutputStream close", e);
 				}
 				if (DEBUG) {
-					Log.i(TAG, "Stopped Video Capture");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Stopped Video Capture");
 				}
 				sh.destroy();
 			}
@@ -526,7 +527,7 @@ public class AROCollectorService extends Service {
 		BufferedWriter appNmesFileWriter = null;
 		try {
 			String strTraceFolderName = mApp.getTcpDumpTraceFolderName();
-			Log.i(TAG, "Trace folder name is: " + strTraceFolderName);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "Trace folder name is: " + strTraceFolderName);
 			File appNameFile = new File(mApp.getTcpDumpTraceFolderName() + APP_NAME_FILE);
 			appNamesFileReader = new BufferedReader(new InputStreamReader(new FileInputStream(
 					appNameFile)));
@@ -540,9 +541,9 @@ public class AROCollectorService extends Service {
 					appNamesWithVersions.add(processName + " " + versionNum);
 				} catch (NameNotFoundException e) {
 					appNamesWithVersions.add(processName);
-					Log.e(TAG, "Package name can not be found; unable to get version number.");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Package name can not be found; unable to get version number.");
 				} catch (Exception e) {
-					Log.e(TAG, "Unable to get version number ");
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Unable to get version number ");
 				}
 			}
 			appNmesFileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
@@ -553,7 +554,7 @@ public class AROCollectorService extends Service {
 
 			}
 		} catch (IOException e) {
-			Log.e(TAG, "Error occured while writing the version number for the applications");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Error occured while writing the version number for the applications");
 		} finally {
 			if (appNamesFileReader != null) {
 				appNamesFileReader.close();

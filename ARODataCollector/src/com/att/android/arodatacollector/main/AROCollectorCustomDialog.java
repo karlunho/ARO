@@ -18,13 +18,14 @@ package com.att.android.arodatacollector.main;
 
 import com.att.android.arodatacollector.R;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -468,7 +469,7 @@ public class AROCollectorCustomDialog extends Dialog implements OnKeyListener {
 		try {
 			AROCollectorCustomDialog.this.dismiss();
 		} catch (IllegalArgumentException e) {
-			Log.e(TAG, "exception in onKey", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in onKey", e);
 		}
 		return ret;
 	}
@@ -496,7 +497,7 @@ public class AROCollectorCustomDialog extends Dialog implements OnKeyListener {
 				}
 				}
 			} catch (IllegalArgumentException e) {
-				Log.e(TAG, "exception in IllegalArgumentException", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in IllegalArgumentException", e);
 			}
 		}
 	}
@@ -547,7 +548,7 @@ public class AROCollectorCustomDialog extends Dialog implements OnKeyListener {
 					if (mApp.getTcpDumpTraceFolderName() != null) {
 						mAROUtils.deleteDirectory(new File(mApp.getTcpDumpTraceFolderName()));
 						if (DEBUG) {
-							Log.i(TAG,
+							AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG,
 									"TRACE_FOLDERNAME_EXISTS deleting directory"
 											+ mApp.getTcpDumpTraceFolderName());
 						}
@@ -582,7 +583,7 @@ public class AROCollectorCustomDialog extends Dialog implements OnKeyListener {
 
 				}
 			} catch (IllegalArgumentException e) {
-				Log.e(TAG, "exception in IllegalArgumentException", e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in IllegalArgumentException", e);
 			}
 		}
 	}

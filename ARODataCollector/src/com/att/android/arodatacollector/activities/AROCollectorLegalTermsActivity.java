@@ -22,10 +22,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.att.android.arodatacollector.R;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -90,7 +91,7 @@ public class AROCollectorLegalTermsActivity extends Activity {
 			readLegalTermsfromfile();
 			setupButtons();
 		} catch (IOException e) {
-			Log.e(TAG, "exception in initializeControls :AROCollectorLegalTermsActivity ", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in initializeControls :AROCollectorLegalTermsActivity ", e);
 		}
 
 	}

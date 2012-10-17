@@ -24,12 +24,13 @@ import com.att.android.arodatacollector.R;
 import com.att.android.arodatacollector.activities.AROCollectorTaskManagerActivity;
 import com.att.android.arodatacollector.main.AROCollectorTaskManagerProcessInfo.PsRow;
 import com.att.android.arodatacollector.utils.AROCollectorUtils;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -181,15 +182,15 @@ public class AROCollectorTaskManagerListAdapters {
 			try {
 				processId = mAroUtils.getProcessID(pid);
 			} catch (IOException e) {
-				Log.e(TAG, "IOException getting process ID for Kill Package" + e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IOException getting process ID for Kill Package" + e);
 			} catch (InterruptedException e) {
-				Log.e(TAG, "InterruptedException getting process ID for Kill Package" + e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "InterruptedException getting process ID for Kill Package" + e);
 			} catch (IndexOutOfBoundsException e) {
-				Log.e(TAG, "IndexOutOfBoundsException getting process Id for Kill Package" + e);
+				AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "IndexOutOfBoundsException getting process Id for Kill Package" + e);
 			}
 			if (processId != 0) {
 				try {
-					Log.i("BACKGROUND", "Package Name=" + packagename + "PID=" + processId);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().i("BACKGROUND", "Package Name=" + packagename + "PID=" + processId);
 					sh = Runtime.getRuntime().exec("su");
 					os = new DataOutputStream(sh.getOutputStream());
 					final String Command = "kill -9 " + processId + "\n";
@@ -197,9 +198,9 @@ public class AROCollectorTaskManagerListAdapters {
 					os.flush();
 					sh.waitFor();
 				} catch (IOException e) {
-					Log.e(TAG, "Failed to kill task" + e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Failed to kill task" + e);
 				} catch (InterruptedException e) {
-					Log.e(TAG, "Failed to kill task" + e);
+					AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "Failed to kill task" + e);
 				} finally {
 					try {
 						os.close();

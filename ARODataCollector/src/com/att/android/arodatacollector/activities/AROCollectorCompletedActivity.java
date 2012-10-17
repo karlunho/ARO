@@ -19,11 +19,12 @@ import java.io.IOException;
 
 import com.att.android.arodatacollector.R;
 import com.att.android.arodatacollector.main.ARODataCollector;
+import com.instaops.android.AndroidMobileAgent;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,6 +75,7 @@ public class AROCollectorCompletedActivity extends Activity {
 		setContentView(R.layout.arocollector_tracecompleted_screen);
 		initTraceSummaryControls();
 		initTraceSummaryControlListeners();
+		AndroidMobileAgent.getAgentInstance().uploadAnalytics();
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class AROCollectorCompletedActivity extends Activity {
 		} catch (IOException e) {
 			// TODO: Setting default value for application up time and notify
 			// user
-			Log.e(TAG, "exception in readPcapStartEndTime. Could not read trace start time", e);
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().e(TAG, "exception in readPcapStartEndTime. Could not read trace start time", e);
 		}
 		traceSummaryOKButton = (Button) findViewById(R.id.datasummaryok);
 		tracePath.setText(ARODataCollector.ARO_TRACE_ROOTDIR + mApp.getDumpTraceFolderName());
@@ -155,7 +157,7 @@ public class AROCollectorCompletedActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		if (DEBUG) {
-			Log.d(TAG, "onPause() called");
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().d(TAG, "onPause() called");
 		}
 	}
 
@@ -174,7 +176,7 @@ public class AROCollectorCompletedActivity extends Activity {
 				+ (appUpMinutes < 10 ? "0" : "") + appUpMinutes + ":"
 				+ (appUpSeconds < 10 ? "0" : "") + appUpSeconds);
 		if (DEBUG) {
-			Log.i(TAG, "DataCollector up time=" + (appUpHours < 10 ? "0" : "") + appUpHours + ":"
+			AndroidMobileAgent.getAgentInstance().getAndroidLogger().i(TAG, "DataCollector up time=" + (appUpHours < 10 ? "0" : "") + appUpHours + ":"
 					+ (appUpMinutes < 10 ? "0" : "") + appUpMinutes + ":"
 					+ (appUpSeconds < 10 ? "0" : "") + appUpSeconds);
 		}
